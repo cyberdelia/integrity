@@ -12,18 +12,26 @@ import (
 
 var (
 	file    string
+	stdout  bool
 	pattern *regexp.Regexp
 )
 
 func init() {
 	flag.StringVar(&file, "f", "", "File name of tar backup")
+	flag.BoolVar(&stdout, "c", false, "Write output on standard output")
 	pattern = regexp.MustCompile(`^(base|global)(/\d+)?/(\d+)$`)
 }
 
-func archiveReader(name string) (archive io.ReadCloser, err error) {
+func archiveReader(name string) (archive io.Reader, err error) {
 	if file != "" {
+		// Read from file
 		return os.Open(file)
 	}
+	if stdout {
+		// Read stdin and copy to stdout
+		return io.TeeReader(os.Stdin, os.Stdout), nil
+	}
+	// Read form stdin
 	return os.Stdin, nil
 }
 
@@ -35,7 +43,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer archive.Close()
 
 	tr := tar.NewReader(archive)
 	for {
