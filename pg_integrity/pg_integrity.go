@@ -5,6 +5,7 @@ import (
 	"flag"
 	"github.com/cyberdelia/integrity"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -18,7 +19,7 @@ var (
 
 func init() {
 	flag.StringVar(&file, "f", "", "File name of tar backup")
-	flag.BoolVar(&stdout, "c", false, "Write output on standard output")
+	flag.BoolVar(&stdout, "c", false, "Copy input on standard output")
 	pattern = regexp.MustCompile(`^(base|global)(/\d+)?/(\d+)$`)
 }
 
@@ -43,6 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer io.Copy(ioutil.Discard, archive)
 
 	tr := tar.NewReader(archive)
 	for {
