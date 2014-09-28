@@ -12,14 +12,16 @@ import (
 )
 
 var (
-	file    string
-	stdout  bool
-	pattern *regexp.Regexp
+	file      string
+	stdout    bool
+	porcelain bool
+	pattern   *regexp.Regexp
 )
 
 func init() {
-	flag.StringVar(&file, "f", "", "File name of tar backup")
-	flag.BoolVar(&stdout, "c", false, "Copy input on standard output")
+	flag.StringVar(&file, "f", "", "File name of tar backup.")
+	flag.BoolVar(&stdout, "c", false, "Copy input on standard output.")
+	flag.BoolVar(&porcelain, "p", false, "Output in an easy-to-parse format for scripts.")
 	pattern = regexp.MustCompile(`^(base|global)(/\d+)?/(\d+)$`)
 }
 
