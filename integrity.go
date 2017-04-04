@@ -27,21 +27,22 @@ import (
 	"unsafe"
 )
 
-var (
-	ErrChecksum = errors.New("checksum mismatch")
-)
+// ErrChecksum is returned if a page checksum didn't match.
+var ErrChecksum = errors.New("checksum mismatch")
 
 func blockSize() uint {
 	return uint(C.block_size())
 }
 
 func pageChecksum(p []byte, n int) uint16 {
-	page := (*C.char)(unsafe.Pointer(&p[0]))
+	page := (*C.char)(C.CBytes(p))
+	defer C.free(unsafe.Pointer(page))
 	return uint16(C.page_checksum(page, C.int(n)))
 }
 
 func headerChecksum(p []byte) uint16 {
-	page := (*C.char)(unsafe.Pointer(&p[0]))
+	page := (*C.char)(C.CBytes(p))
+	defer C.free(unsafe.Pointer(page))
 	return uint16(C.header_checksum(page))
 }
 
@@ -68,7 +69,7 @@ func Verify(r io.Reader) error {
 			// Checksum mistmatch
 			return ErrChecksum
 		}
-		blockNumber += 1
+		blockNumber++
 	}
 	return nil
 }

@@ -3,12 +3,13 @@ package main
 import (
 	"archive/tar"
 	"flag"
-	"github.com/cyberdelia/integrity"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+
+	"github.com/cyberdelia/integrity"
 )
 
 var (
@@ -66,8 +67,7 @@ func main() {
 			// Ignore non-pages files
 			continue
 		}
-		err = integrity.Verify(tr)
-		if err != nil {
+		if err = integrity.Verify(tr); err != nil {
 			log.Printf("%s: %s\n", h.Name, err)
 		}
 	}
