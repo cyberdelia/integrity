@@ -1,0 +1,10 @@
+language: go
+sudo: required
+dist: trusty
+go:
+  - 1.8
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq postgresql-server-dev-all
+before_script: go get -u github.com/kardianos/govendor
+script: govendor vet +local && govendor test +local -short -race -cover ./...
