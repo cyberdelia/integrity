@@ -24,3 +24,18 @@ func TestVerifyCorrupt(t *testing.T) {
 		t.Fatalf("unexpected error: %s", err)
 	}
 }
+
+func BenchmarkVerify(b *testing.B) {
+	b.ReportAllocs()
+	p, err := os.Open("testdata/correct")
+	if err != nil {
+		b.Fatalf("can't open file: %s", err)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		p.Seek(0, 0)
+		if err := Verify(p); err != nil {
+			b.Fatalf("unexpected error: %s", err)
+		}
+	}
+}

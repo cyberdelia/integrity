@@ -50,8 +50,8 @@ func headerChecksum(p []byte) uint16 {
 func Verify(r io.Reader) error {
 	blockNumber := 0
 	blockSize := blockSize()
+	block := make([]byte, blockSize)
 	for {
-		block := make([]byte, blockSize)
 		_, err := io.ReadFull(r, block)
 		if err != nil {
 			if err == io.EOF {
@@ -63,7 +63,7 @@ func Verify(r io.Reader) error {
 		headerChecksum := headerChecksum(block)
 		if headerChecksum == 0 {
 			// Checksum not enabled
-			break
+			return nil
 		}
 		if checksum != headerChecksum {
 			// Checksum mistmatch
